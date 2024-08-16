@@ -10,23 +10,23 @@ class ManufacturerSerializer(serializers.ModelSerializer):
 
 
 class ContractSerializer(serializers.ModelSerializer):
-    manufacturers_id = serializers.SerializerMethodField()
-
     class Meta:
         model = Contract
-        fields = ['id', 'contract_id', 'manufacturers_id']
+        fields = ['id', 'contract_id']
         read_only_fields = ['id', 'created_at']
-
-    def get_manufacturers_id(self, obj):
-        manufacturers_id = obj.credit_application.products.values_list('manufacturer_id', flat=True).distinct()
-        return manufacturers_id
 
 
 class CreditApplicationSerializer(serializers.ModelSerializer):
+    manufacturers_id = serializers.SerializerMethodField()
+
     class Meta:
         model = CreditApplication
-        fields = ['id', 'contract', 'created_at']
+        fields = ['id', 'contract', 'manufacturers_id']
         read_only_fields = ['id', 'created_at']
+
+    def get_manufacturers_id(self, obj):
+        manufacturers_id = obj.products.values_list('manufacturer_id', flat=True).distinct()
+        return manufacturers_id
 
 
 class ProductSerializer(serializers.ModelSerializer):
